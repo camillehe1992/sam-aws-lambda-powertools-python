@@ -2,21 +2,29 @@ from aws_lambda_powertools import Logger, Metrics, Tracer
 from aws_lambda_powertools.event_handler.api_gateway import ApiGatewayResolver
 from aws_lambda_powertools.logging import correlation_paths
 from aws_lambda_powertools.metrics import MetricUnit
+from dynamodb import DynamodbClient
 
-logger = Logger(service="PetStore")
-tracer = Tracer(service="PetStore")
-metrics = Metrics(namespace="PetStore", service="PetStore")
+logger = Logger(service="Todos")
+tracer = Tracer(service="Todos")
+metrics = Metrics(namespace="Todos", service="Todos")
 app = ApiGatewayResolver()
 
+TODOS_TABLE = "todos"
 
-@app.get("/pets")
+
+ddb_client = DynamodbClient(table_name=TODOS_TABLE)
+
+
+@app.get("/todos")
 @tracer.capture_method
-def hello_name(name):
-    tracer.put_annotation(key="Pet")
+def todos():
+    tracer.put_annotation(key="Todo", value="unknown")
     logger.info("Request from unknown received")
     metrics.add_metric(name="SuccessfulGreetings",
                        unit=MetricUnit.Count, value=1)
-    return {"message": f"hello {name}!"}
+    todos = ddb_client.query()
+    logger.info(f"todos: {todos}")
+    return todos
 
 
 @app.get("/hello/<name>")

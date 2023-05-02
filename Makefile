@@ -17,6 +17,7 @@ target:
 clean: ##=> Deletes current build environment and latest build
 	$(info [*] Who needs all that anyway? Destroying environment....)
 	rm -rf ./.aws-sam/
+	rm -rf ./.build/
 
 all: clean build
 
@@ -27,7 +28,7 @@ install:
 
 dev:
 	$(info [*] Installing pipenv project dependencies)
-	@$(PIPENV) install
+	@$(PIPENV) install -r requirements-dev.txt
 	@$(PIPENV) install -d
 
 shell:

@@ -1,8 +1,8 @@
 version = 0.1
 [default.deploy.parameters]
-stack_name = "PetStore"
+stack_name = "Todos"
 resolve_s3 = true
-s3_prefix = "PetStore"
+s3_prefix = "Todos"
 region = "cn-north-1"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM"

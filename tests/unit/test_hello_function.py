@@ -1,6 +1,6 @@
 import json
 
-from hello_world import app
+from src import app
 
 
 def test_lambda_handler_hello_path(apigw_hello_event, lambda_context):
