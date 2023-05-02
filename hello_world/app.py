@@ -3,10 +3,20 @@ from aws_lambda_powertools.event_handler.api_gateway import ApiGatewayResolver
 from aws_lambda_powertools.logging import correlation_paths
 from aws_lambda_powertools.metrics import MetricUnit
 
-logger = Logger(service="APP")
-tracer = Tracer(service="APP")
-metrics = Metrics(namespace="MyApp", service="APP")
+logger = Logger(service="PetStore")
+tracer = Tracer(service="PetStore")
+metrics = Metrics(namespace="PetStore", service="PetStore")
 app = ApiGatewayResolver()
+
+
+@app.get("/pets")
+@tracer.capture_method
+def hello_name(name):
+    tracer.put_annotation(key="Pet")
+    logger.info("Request from unknown received")
+    metrics.add_metric(name="SuccessfulGreetings",
+                       unit=MetricUnit.Count, value=1)
+    return {"message": f"hello {name}!"}
 
 
 @app.get("/hello/<name>")

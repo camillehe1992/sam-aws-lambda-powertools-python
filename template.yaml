@@ -26,7 +26,7 @@ Globals: # https://docs.aws.amazon.com/serverless-application-model/latest/devel
     Environment:
       Variables:
         # Powertools env vars: https://awslabs.github.io/aws-lambda-powertools-python/#environment-variables
-        LOG_LEVEL: INFO
+        LOG_LEVEL: DEBUG
         POWERTOOLS_LOGGER_SAMPLE_RATE: 0.1
         POWERTOOLS_LOGGER_LOG_EVENT: true
         POWERTOOLS_METRICS_NAMESPACE: MyServerlessApplication
@@ -62,6 +62,11 @@ Resources:
           Type: Api
           Properties:
             Path: /hello/{name}
+            Method: GET
+        PetsAll:
+          Type: Api
+          Properties:
+            Path: /pets
             Method: GET
       # Policies: # Example inline policy
       #     - Version: "2012-10-17"

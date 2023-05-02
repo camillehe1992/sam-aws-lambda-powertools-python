@@ -4,5 +4,5 @@
 # This is always a good practice as your lambda packaged code will be much lighter, and it will be invoked quicker
 
 # boto3
-# aws-lambda-powertools
+aws-lambda-powertools
 # aws_xray_sdk
