@@ -1,50 +1,73 @@
 from aws_lambda_powertools import Logger, Metrics, Tracer
-from aws_lambda_powertools.event_handler.api_gateway import ApiGatewayResolver
+from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.logging import correlation_paths
 from aws_lambda_powertools.metrics import MetricUnit
-from dynamodb import DynamodbClient
+
+from todo import TodoService
 
 logger = Logger(service="Todos")
 tracer = Tracer(service="Todos")
 metrics = Metrics(namespace="Todos", service="Todos")
-app = ApiGatewayResolver()
+app = APIGatewayRestResolver()
 
-TODOS_TABLE = "todos"
-
-
-ddb_client = DynamodbClient(table_name=TODOS_TABLE)
+todo_service = TodoService()
 
 
 @app.get("/todos")
 @tracer.capture_method
-def todos():
+def list_todos():
     tracer.put_annotation(key="Todo", value="unknown")
     logger.info("Request from unknown received")
-    metrics.add_metric(name="SuccessfulGreetings",
-                       unit=MetricUnit.Count, value=1)
-    todos = ddb_client.query()
+    metrics.add_metric(name="SuccessfulGreetings", unit=MetricUnit.Count, value=1)
+    todos = todo_service.list()
     logger.info(f"todos: {todos}")
     return todos
 
 
-@app.get("/hello/<name>")
+@app.post("/todos")
 @tracer.capture_method
-def hello_name(name):
-    tracer.put_annotation(key="User", value=name)
-    logger.info(f"Request from {name} received")
-    metrics.add_metric(name="SuccessfulGreetings",
-                       unit=MetricUnit.Count, value=1)
-    return {"message": f"hello {name}!"}
+def create_todo():
+    tracer.put_annotation(key="Todo", value="unknown")
+    todo_data: dict = app.current_event.json_body  # deserialize json str to dict
+    logger.info(f"todo_data: {todo_data}")
+    metrics.add_metric(name="SuccessfulGreetings", unit=MetricUnit.Count, value=1)
+    todo = todo_service.create(todo=todo_data)
+    logger.info(f"todo: {todo}")
+    return todo
 
 
-@app.get("/hello")
+@app.get("/todos/<id>")
 @tracer.capture_method
-def hello():
-    tracer.put_annotation(key="User", value="unknown")
-    logger.info("Request from unknown received")
-    metrics.add_metric(name="SuccessfulGreetings",
-                       unit=MetricUnit.Count, value=1)
-    return {"message": "hello unknown!"}
+def get_todo_by_id(id):
+    tracer.put_annotation(key="Todo", value=id)
+    logger.info(f"Request from {id} received")
+    metrics.add_metric(name="SuccessfulGreetings", unit=MetricUnit.Count, value=1)
+    todo = todo_service.get(id=id)
+    logger.info(f"todo: {todo}")
+    return todo
+
+
+@app.put("/todos/<id>")
+@tracer.capture_method
+def update_todo(id):
+    tracer.put_annotation(key="Todo", value=id)
+    todo_data: dict = app.current_event.json_body  # deserialize json str to dict
+    logger.info(f"todo_data: {todo_data}")
+    metrics.add_metric(name="SuccessfulGreetings", unit=MetricUnit.Count, value=1)
+    res = todo_service.update(todo={**todo_data, "id": id})
+    logger.info(f"res: {res}")
+    return res
+
+
+@app.delete("/todos/<id>")
+@tracer.capture_method
+def delete_todo(id):
+    tracer.put_annotation(key="Todo", value=id)
+    logger.info(f"Request from {id} received")
+    metrics.add_metric(name="SuccessfulGreetings", unit=MetricUnit.Count, value=1)
+    res = todo_service.delete(id=id)
+    logger.info(f"res: {res}")
+    return res
 
 
 @tracer.capture_lambda_handler

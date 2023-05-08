@@ -2,6 +2,8 @@ BASE := $(shell /bin/pwd)
 CODE_COVERAGE = 72
 PIPENV ?= pipenv
 
+AWS_PROFILE = 756143471679_UserFull
+
 #############
 #  SAM vars	#
 #############
@@ -23,18 +25,17 @@ all: clean build
 
 install:
 	$(info [*] Installing pipenv)
-	@pip install pipenv --upgrade
+	@pip3 install pipenv --upgrade
 	$(MAKE) dev
 
 dev:
 	$(info [*] Installing pipenv project dependencies)
-	@$(PIPENV) install -r requirements-dev.txt
 	@$(PIPENV) install -d
 
 shell:
 	@$(PIPENV) shell
 
-package:
+package.layer:
 	./scripts/deploy-layer.sh
 
 build: ##=> Same as package except that we don't create a ZIP
@@ -46,13 +47,17 @@ deploy.guided: ##=> Guided deploy that is typically run for the first time only
 deploy: ##=> Deploy app using previously saved SAM CLI configuration
 	sam deploy --force-upload
 
+deploy.quick:
+	sam build --use-container
+	sam deploy --force-upload --profile ${AWS_PROFILE}
+
 invoke: ##=> Run SAM Local function with a given event payload
 	@sam local invoke HelloWorldFunction --event events/hello.json
 
 run: ##=> Run SAM Local API GW and can optionally run new containers connected to a defined network
 	@test -z ${NETWORK} \
 		&& sam local start-api \
-		|| sam local start-api --docker-network ${NETWORK}
+		|| sam local start-api --docker-network ${NETWORK} --skip-pull-image
 
 test: ##=> Run pytest
 	POWERTOOLS_METRICS_NAMESPACE="MyServerlessApplication" $(PIPENV) run python -m pytest --cov . --cov-report term-missing --cov-fail-under $(CODE_COVERAGE) tests/ -vv
