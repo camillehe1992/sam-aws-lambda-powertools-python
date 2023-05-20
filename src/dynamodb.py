@@ -30,7 +30,7 @@ class DynamodbClient:
             ExpressionAttributeValues={":completed": item["completed"]},
             ReturnValues="UPDATED_NEW",
         )
-        return response["Attributes"]
+        return response["Attributes"] if "Attributes" in response else {}
 
     def delete_item(self, id: str) -> None:
         response = self._table.delete_item(Key={"id": id}, ReturnValues="ALL_OLD")

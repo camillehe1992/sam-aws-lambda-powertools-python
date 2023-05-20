@@ -17,7 +17,12 @@ class TodoService:
     def get(self, id) -> dict:
         try:
             response = ddb_client.get_item(id=id)
-            return {"message": "get todo", "item": response}
+            return {
+                "message": "todo retrieved sucessfully"
+                if response
+                else "todo not found",
+                "item": response,
+            }
         except Exception as e:
             raise e
 
@@ -25,22 +30,26 @@ class TodoService:
         try:
             item = {"id": str(uuid4()), "completed": "false", **todo}
             ddb_client.put_item(item)
-            return {"message": "todo created", "item": item}
+            return {"message": "todo created sucessfully", "item": item}
         except Exception as e:
             raise e
 
     def update(self, todo) -> dict:
         try:
             response = ddb_client.update_item(item=todo)
-            return {"message": f"todo updated", "item": response}
+            return {
+                "message": "todo updated sucessfully" if response else "todo not found",
+                "item": response,
+            }
         except Exception as e:
             raise e
 
     def delete(self, id) -> dict:
         try:
             response = ddb_client.delete_item(id=id)
-            if not response:
-                raise Exception("todo not found")
-            return {"message": f"todo deleted", "item": response}
+            return {
+                "message": "todo deleted sucessfully" if response else "todo not found",
+                "item": response,
+            }
         except Exception as e:
             raise e
