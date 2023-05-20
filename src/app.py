@@ -5,7 +5,7 @@ from todo import TodoService
 
 todo_service = TodoService()
 
-logger = Logger(service="Todos.app")
+logger = Logger(service="app")
 app = APIGatewayRestResolver()
 
 
