@@ -1,4 +1,5 @@
 import boto3
+from boto3.dynamodb.conditions import Attr
 
 
 class DynamodbClient:
@@ -19,19 +20,11 @@ class DynamodbClient:
     # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb/table/get_item.html
     def get_item(self, id: str) -> dict:
         response = self._table.get_item(Key={"id": id})
-        if "Item" in response:
-            return response["Item"]
-        else:
-            raise Exception(f"fail to retrieve todo {id}")
+        return response["Item"]
 
     # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb/table/put_item.html
-    def put_item(self, item: dict) -> dict:
-        id = item["id"]
-        response = self._table.put_item(Item=item)
-        if "Attributes" in response:
-            return response["Attributes"]
-        else:
-            raise Exception(f"fail to update todo {id}")
+    def put_item(self, item: dict) -> None:
+        self._table.put_item(Item=item)
 
     # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb/table/update_item.html
     def update_item(self, item: dict) -> dict:
@@ -41,17 +34,16 @@ class DynamodbClient:
             UpdateExpression="set #completed = :completed",
             ExpressionAttributeNames={"#completed": "completed"},
             ExpressionAttributeValues={":completed": item["completed"]},
+            ConditionExpression=Attr("id").eq(id),
             ReturnValues="UPDATED_NEW",
         )
-        if "Attributes" in response:
-            return response["Attributes"]
-        else:
-            raise Exception(f"failed to update todo {id}")
+        return response["Attributes"]
 
     # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb/table/delete_item.html
     def delete_item(self, id: str) -> None:
-        response = self._table.delete_item(Key={"id": id}, ReturnValues="ALL_OLD")
-        if "Attributes" in response:
-            return response["Attributes"]
-        else:
-            raise Exception(f"fail to delete todo {id}")
+        response = self._table.delete_item(
+            Key={"id": id},
+            ReturnValues="ALL_OLD",
+            ConditionExpression=Attr("id").eq(id),
+        )
+        return response["Attributes"]
