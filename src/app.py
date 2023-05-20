@@ -12,9 +12,8 @@ app = APIGatewayRestResolver()
 # List all todos in table
 @app.get("/todos")
 def list_todos():
-    logger.info("List all todo request")
     todos = todo_service.list()
-    logger.info(todos)
+    logger.info("list all todo request", todos=todos)
     return todos
 
 
@@ -24,7 +23,7 @@ def create_todo():
     todo_data: dict = app.current_event.json_body  # deserialize json str to dict
     logger.info(todo_data)
     todo = todo_service.create(todo=todo_data)
-    logger.info(todo)
+    logger.info("create todo", todo=todo)
     return todo
 
 
@@ -32,7 +31,7 @@ def create_todo():
 @app.get("/todos/<id>")
 def get_todo_by_id(id):
     todo = todo_service.get(id=id)
-    logger.info(todo)
+    logger.info("retrieve todo", todo=todo)
     return todo
 
 
@@ -41,9 +40,9 @@ def get_todo_by_id(id):
 def update_todo(id):
     todo_data: dict = app.current_event.json_body  # deserialize json str to dict
     logger.info(todo_data)
-    data = todo_service.update(todo={**todo_data, "id": id})
-    logger.info(data)
-    return data
+    todo = todo_service.update(todo={**todo_data, "id": id})
+    logger.info("update todo", todo=todo)
+    return todo
 
 
 # Delete a particular to todo by id

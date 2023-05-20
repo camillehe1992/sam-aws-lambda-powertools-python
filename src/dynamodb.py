@@ -7,6 +7,7 @@ class DynamodbClient:
         self._dynomodb = boto3.resource("dynamodb", region_name="cn-north-1")
         self._table = self._dynomodb.Table(table_name)
 
+    # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb/table/scan.html
     def scan(self) -> list:
         response = self._table.scan()
         data = response["Items"]
@@ -15,23 +16,42 @@ class DynamodbClient:
             data.extend(response["Items"])
         return data
 
+    # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb/table/get_item.html
     def get_item(self, id: str) -> dict:
         response = self._table.get_item(Key={"id": id})
-        return response["Item"] if "Item" in response else {}
+        if "Item" in response:
+            return response["Item"]
+        else:
+            raise Exception(f"fail to retrieve todo {id}")
 
+    # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb/table/put_item.html
     def put_item(self, item: dict) -> dict:
-        self._table.put_item(Item=item)
+        id = item["id"]
+        response = self._table.put_item(Item=item)
+        if "Attributes" in response:
+            return response["Attributes"]
+        else:
+            raise Exception(f"fail to update todo {id}")
 
+    # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb/table/update_item.html
     def update_item(self, item: dict) -> dict:
+        id = item["id"]
         response = self._table.update_item(
-            Key={"id": item["id"]},
+            Key={"id": id},
             UpdateExpression="set #completed = :completed",
             ExpressionAttributeNames={"#completed": "completed"},
             ExpressionAttributeValues={":completed": item["completed"]},
             ReturnValues="UPDATED_NEW",
         )
-        return response["Attributes"] if "Attributes" in response else {}
+        if "Attributes" in response:
+            return response["Attributes"]
+        else:
+            raise Exception(f"failed to update todo {id}")
 
+    # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb/table/delete_item.html
     def delete_item(self, id: str) -> None:
         response = self._table.delete_item(Key={"id": id}, ReturnValues="ALL_OLD")
-        return response["Attributes"] if "Attributes" in response else {}
+        if "Attributes" in response:
+            return response["Attributes"]
+        else:
+            raise Exception(f"fail to delete todo {id}")
