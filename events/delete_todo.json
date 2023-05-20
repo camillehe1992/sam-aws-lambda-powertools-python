@@ -1,0 +1,47 @@
+{
+  "resource": "/todos/{id}",
+  "path": "/todos/d748dd7e-e9ba-4b18-8e84-96b632a787b1",
+  "httpMethod": "DELETE",
+  "headers": null,
+  "multiValueHeaders": null,
+  "queryStringParameters": null,
+  "multiValueQueryStringParameters": null,
+  "pathParameters": {
+    "id": "d748dd7e-e9ba-4b18-8e84-96b632a787b1"
+  },
+  "stageVariables": null,
+  "requestContext": {
+    "resourceId": "qrzkia",
+    "resourcePath": "/todos/{id}",
+    "httpMethod": "DELETE",
+    "extendedRequestId": "FMtJ9E6ihTIFmFQ=",
+    "requestTime": "20/May/2023:01:55:49 +0000",
+    "path": "/todos/{id}",
+    "accountId": "756143471679",
+    "protocol": "HTTP/1.1",
+    "stage": "test-invoke-stage",
+    "domainPrefix": "testPrefix",
+    "requestTimeEpoch": 1684547749833,
+    "requestId": "0f1bea21-5400-422c-93ab-51a6e01bc5cb",
+    "identity": {
+      "cognitoIdentityPoolId": null,
+      "cognitoIdentityId": null,
+      "apiKey": "test-invoke-api-key",
+      "principalOrgId": null,
+      "cognitoAuthenticationType": null,
+      "userArn": "arn:aws-cn:sts::756143471679:assumed-role/Operations/heyachao10920@navinfo.com",
+      "apiKeyId": "test-invoke-api-key-id",
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36",
+      "accountId": "756143471679",
+      "caller": "AROA3ADNJXQ73H2O2YFME:heyachao10920@navinfo.com",
+      "sourceIp": "test-invoke-source-ip",
+      "accessKey": "ASIA3ADNJXQ7XQUIAY6L",
+      "cognitoAuthenticationProvider": null,
+      "user": "AROA3ADNJXQ73H2O2YFME:heyachao10920@navinfo.com"
+    },
+    "domainName": "testPrefix.testDomainName",
+    "apiId": "n6qgx11qbj"
+  },
+  "body": null,
+  "isBase64Encoded": false
+}

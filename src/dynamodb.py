@@ -17,14 +17,12 @@ class DynamodbClient:
 
     def get_item(self, id: str) -> dict:
         response = self._table.get_item(Key={"id": id})
-        return response["Item"]
+        return response["Item"] if "Item" in response else {}
 
     def put_item(self, item: dict) -> dict:
-        response = self._table.put_item(Item=item)
-        return response["Attributes"]
+        self._table.put_item(Item=item)
 
     def update_item(self, item: dict) -> dict:
-        print(item)
         response = self._table.update_item(
             Key={"id": item["id"]},
             UpdateExpression="set #completed = :completed",
@@ -36,4 +34,4 @@ class DynamodbClient:
 
     def delete_item(self, id: str) -> None:
         response = self._table.delete_item(Key={"id": id}, ReturnValues="ALL_OLD")
-        return response["Attributes"]
+        return response["Attributes"] if "Attributes" in response else {}

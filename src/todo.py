@@ -12,12 +12,12 @@ class TodoService:
 
     def list(self) -> list:
         response = ddb_client.scan()
-        return {"message": "list todos", "items": response["items"]}
+        return {"message": "list todos", "items": response}
 
     def get(self, id) -> dict:
         try:
             response = ddb_client.get_item(id=id)
-            return {"message": "get todo", "items": response["item"]}
+            return {"message": "get todo", "item": response}
         except Exception as e:
             raise e
 
@@ -39,6 +39,8 @@ class TodoService:
     def delete(self, id) -> dict:
         try:
             response = ddb_client.delete_item(id=id)
+            if not response:
+                raise Exception("todo not found")
             return {"message": f"todo deleted", "item": response}
         except Exception as e:
             raise e
